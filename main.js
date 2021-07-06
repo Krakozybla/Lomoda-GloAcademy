@@ -1,15 +1,19 @@
 const headerCityButton = document.querySelector(".header__city-button");
 
 headerCityButton.textContent = localStorage.getItem('lamoda-location') || 'Ваш город?'
-headerCityButton.textContent === null ? headerCityButton.textContent = 'Ваш город?' : localStorage.getItem('lamoda-location')
-
 //Появляеться null в headerCityButton.textConten, как его убрать? =))
 
 headerCityButton.addEventListener('click', () =>{
     const city = prompt('Укажите ваш город');
-    headerCityButton.textContent = city;
-    localStorage.setItem('lamoda-location', city);
+    //Что бы убрать null решил сделать проверку propmt на пустоту, надеюсь есть вариант получше=))
+    if(city.value === ""){
+        city.textContent = 'Ваш город?'
+    }else{
+        headerCityButton.textContent = city;
+        localStorage.setItem('lamoda-location', city);
+    }
 });
+
 
 
 // Modal Window

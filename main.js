@@ -3,7 +3,6 @@ const headerCityButton = document.querySelector(".header__city-button");
 headerCityButton.textContent = localStorage.getItem('lamoda-location') || 'Ваш город?'
 //Появляеться null в headerCityButton.textConten, как его убрать? =))
 let hash = location.hash.substring(1);
-console.log(headerCityButton);
 headerCityButton.addEventListener('click', () =>{
     
 
@@ -99,7 +98,6 @@ cartOverlay.addEventListener('click', (e)=>{
 })
 
 try{
-    console.log(hash);
     const goodsList = document.querySelector('.goods__list');
     if(!goodsList){
         console.log('This is not a goods page');
@@ -150,6 +148,16 @@ try{
 
     window.addEventListener('hashchange', ()=>{
         hash = location.hash.substring(1);
+        
+        let labelProductPage = document.querySelector('.goods__title');
+        if(hash === 'men'){
+            labelProductPage.textContent = 'Мужчинам';
+        }else if(hash === 'women'){
+            labelProductPage.textContent = 'Девушкам';
+        }else{
+            labelProductPage.textContent = 'Детям';
+        }
+
         getGoods(renderGoodsList, hash);
     })
 

@@ -1,4 +1,6 @@
 const headerCityButton = document.querySelector(".header__city-button");
+const cardListGoods = document.querySelector('.cart__list-goods');
+const cardTotalCoast = document.querySelector('.cart__total-cost');
 
 headerCityButton.textContent = localStorage.getItem('lamoda-location') || 'Ваш город?'
 //Появляеться null в headerCityButton.textConten, как его убрать? =))
@@ -15,9 +17,45 @@ headerCityButton.addEventListener('click', () =>{
         localStorage.setItem('lamoda-location', city);
     }
 });
+// LocalStorage 
+ const getLocalStorage = () => JSON?.parse(localStorage.getItem('card-lomoda')) || [];
+ const setLocalStorage = data => localStorage.setItem('card-lomoda', JSON.stringify(data));
+const renderCard = () =>{
+    cardListGoods.textContent = '';
+
+    const cardItems = getLocalStorage();
+
+    let totalPrice = 0;
+
+    cardItems.forEach((item, i)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${item.name} ${item.name}</td>
+        ${item.color ? `<td>${item.color}</td>` : '<td>-</td>'}
+        ${item.sizes ? `<td>${item.sizes}</td>` : '<td>-</td>'}
+        <td>${item.cost} &#8381;</td>
+        <td><button class="btn-delete" data-id="${item.id}">&times;</button></td>
+        `;
+        totalPrice += item.cost; 
+        cardListGoods.append(tr);
+    })
+    cardTotalCoast.textContent = totalPrice;
+}
 
 
+const deleteItemCard = id =>{
+    const cardItems = getLocalStorage();
+    const newCardItems = cardItems.filter(item => item.id !== id);
+    setLocalStorage(newCardItems);
+}
 
+cardListGoods.addEventListener('click', (e)=>{
+    if(e.target.classList.contains('btn-delete')){
+        deleteItemCard(e.target.dataset.id);
+        renderCard();
+    }
+})
 // Modal Window
 const subheaderCard = document.querySelector('.subheader__cart');
 const cartOverlay = document.querySelector('.cart-overlay');
@@ -48,6 +86,7 @@ const enableScroll = () =>{
 
 const cardModalOpen =()=>{
     cartOverlay.classList.add('cart-overlay-open');
+    renderCard();
     disbleScroll();
 }
 
@@ -190,8 +229,12 @@ try{
 const generateList = data => data.reduce((html, item, i) => 
     html +  `<li class="card-good__select-item data-id="${i}"">${item}</li>`,
     '')
- const renderCardGood = ([{brand, name, cost, color, sizes, photo}]) =>{
-    console.log(brand);
+
+ const renderCardGood = ([{id, brand, name, cost, color, sizes, photo}]) =>{
+        
+    const data = {brand, name, cost, id};
+
+
     cardGoodImage.src = 'goods-image/' + photo;
     cardGoodImage.alt = `${brand} ${name}`;
     cardGoodBrand.textContent = brand;
@@ -206,12 +249,30 @@ const generateList = data => data.reduce((html, item, i) =>
     };
     if(sizes){
         cardGoodSizes.textContent = sizes[0];
+        cardGoodSizes.dataset.id = 0;
         cardGoodSizesList.innerHTML = generateList(sizes)
     }else{
         cardGoodSizes.style.display = 'none';
     };
-
-
+    if(getLocalStorage().some(item => item.id === id)){
+        cardGoodBuy.classList.add('delete');
+        cardGoodBuy.textContent = 'Удалить из корзины';
+    }
+    //render card with goods//
+ cardGoodBuy.addEventListener('click', ()=>{
+     if(cardGoodBuy.classList.contains('delete')){
+         deleteItemCard(id);
+         cardGoodBuy.classList.remove('delete');
+         cardGoodBuy.textContent = 'Добавить в корзину';
+     }
+    if(color) data.color = cardGoodColor.textContent;
+    if(sizes) data.sizes =  cardGoodSizes.textContent;
+    cardGoodBuy.classList.add('delete');
+    cardGoodBuy.textContent = 'Удалить из корзины';
+    const cardData = getLocalStorage();
+    cardData.push(data);
+    setLocalStorage(cardData); 
+})
     console.log(brand);
  }
 
